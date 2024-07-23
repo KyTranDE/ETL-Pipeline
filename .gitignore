@@ -17,3 +17,6 @@ __pycache__/
 
 # Ignore Python init files
 __init__.py
+
+# Ignore Jupyter Notebook checkpoints
+pushMatchApi.ipynb
