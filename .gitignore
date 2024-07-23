@@ -1,0 +1,19 @@
+# Ignore virtual environment directory
+.venv
+
+# Ignore configuration files
+/config/config.ini
+/config/config.yml
+
+# Ignore Python cache files
+__pycache__/
+*__pycache__
+
+# Ignore CSV files
+*.csv
+
+# Ignore log files
+*.log
+
+# Ignore Python init files
+__init__.py

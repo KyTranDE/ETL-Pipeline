@@ -1,0 +1,41 @@
+version: "2"
+services:
+  redis:
+    image: redis:alpine
+    restart: always
+    hostname: cache-redis
+    container_name: cache-redis
+    ports:
+      - '6377:6379'
+    command: redis-server
+
+  app:
+    image: python:3.12.3
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "1704:8000"
+    command: >
+      sh -c "pip install -r requirements.txt && python getMatchRedis.py"
+    environment:
+      - REDIS_HOST=cache-redis
+      - REDIS_PORT=6379
+    restart: always
+
+  app2:
+    image: python:3.12.3
+    working_dir: /app2
+    volumes:
+      - .:/app2
+    ports:
+      - "1706:8000"
+    command: >
+      sh -c "pip install -r requirements.txt && python getPicker.py"
+    environment:
+      - REDIS_HOST=cache-redis
+      - REDIS_PORT=6379
+    restart: always
+
+networks:
+  bbsw-sport:
