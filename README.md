@@ -1,2 +1,2 @@
 # ETL-pipeline
-![image](https://github.com/user-attachments/assets/b1c52696-fefc-4f2f-b2ce-d04128eac9b9)
+![image](https://github.com/user-attachments/assets/cab7f279-a407-4196-97ae-e98757171223)
