@@ -32,5 +32,5 @@
 - Service crawl chạy mỗi 2 giây để đảm bảo dữ liệu được thu thập liên tục và cập nhật kịp thời gần với time thực tế.
 
 ## Cài Đặt và Sử Dụng
-- dịch vụ private.
+- dịch vụ private (no config).
 
