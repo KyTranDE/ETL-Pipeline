@@ -28,8 +28,8 @@
 - API này có thể được sử dụng để cung cấp dữ liệu để hiển thị trên web.
 
 ## Chú Thích Bổ Sung
-`- Redis cache chịu trách nhiệm kiểm tra các khóa trùng lặp. Nếu tìm thấy trùng lặp, dữ liệu sẽ bị bỏ qua và không được cập nhật vào cơ sở dữ liệu. Điều này giúp đảm bảo rằng database không bị truy cập liên tục và postapi chỉ thay đổi khi data crawl về thay đổi giảm thiểu tối đa lượng request.
-- Service crawl chạy mỗi 2 giây để đảm bảo dữ liệu được thu thập liên tục và cập nhật kịp thời gần với time thực tế.`
+- `Redis cache chịu trách nhiệm kiểm tra các khóa trùng lặp. Nếu tìm thấy trùng lặp, dữ liệu sẽ bị bỏ qua và không được cập nhật vào cơ sở dữ liệu. Điều này giúp đảm bảo rằng database không bị truy cập liên tục và postapi chỉ thay đổi khi data crawl về thay đổi giảm thiểu tối đa lượng request.`
+- `Service crawl chạy mỗi 2 giây để đảm bảo dữ liệu được thu thập liên tục và cập nhật kịp thời gần với time thực tế.`
 
 ## Cài Đặt và Sử Dụng
 - dịch vụ private (no config).
