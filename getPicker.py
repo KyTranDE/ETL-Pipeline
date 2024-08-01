@@ -24,11 +24,12 @@ db_config = {
     "database": config['database_sv']['DB_SV_DATABASE']
 }
 
-redis_sv = config['redis_sv']
+redis_sv = config['redis_local']
 
 # Kết nối đến Redis
 redis_client = redis.Redis(**redis_sv)
-redis_set_key = "unique_get_picker_ids_"
+# redis_client = redis.Redis(host='localhost', port=6377, db=0)
+redis_set_key = "unique_get_picker_idss_"
 
 def fetch_data_from_url(url, headers, params):
     response = requests.get(url, headers=headers, params=params)
@@ -37,7 +38,6 @@ def fetch_data_from_url(url, headers, params):
 def process_pick_data(data, gameType):
     for i in data:
         for game, pick in i["picks"].items():
-            # print(game, pick)
             datas = {
                 "match_id": game,
                 "date_add": datetime.now().strftime("%Y-%m-%d"),
@@ -45,23 +45,23 @@ def process_pick_data(data, gameType):
                 "stake": pick.get("stake"),
                 "seq": pick.get("seq"),
                 "result": pick.get("result"),
-                "win_pct": i.get("season_win_pct", 0)  # Default to 0 if season_win_pct is missing
+                "win_pct": i.get("season_win_pct", 0) 
             }
             if gameType == "ats":
-                if "spread" in pick and "team_id" in pick and i.get("win_pct", 0) >= 55:
+                if "spread" in pick and "team_id" in pick:
                     datas["spread"] = pick["spread"]
                     datas["team_id"] = pick["team_id"]
                     yield datas
                 else:
                     continue
             else:
-                if "ou_type" in pick and "ou_value" in pick and i.get("win_pct", 0) >= 51:
+                if "ou_type" in pick and "ou_value" in pick:
                     datas["ou_type"] = pick["ou_type"]
                     datas["ou_value"] = pick["ou_value"]
                     yield datas
                 else:
                     continue
-
+            
 
 def get_us_date(timezone_name='US/Eastern'):
     us_timezone = pytz.timezone(timezone_name)
@@ -75,13 +75,16 @@ def get_picker(tournament, season, gameType, db_config,season_date):
 
     query = f"SELECT idx FROM date_id WHERE date_play = '{CURRENT_DATE_US}' and sport_id = '{tournament}' and season = '{season_date}'"
     idx = conn.query(query, False)[0][0]
-
     list_url = [url_picker.format(tournament, season, idx, gameType, sequence) for sequence in range(0, 150, 50)]
+    
     for url in list_url:
+
         data = fetch_data_from_url(url, headers, params)
         for datas in process_pick_data(data, gameType):
+    
             redis_key = f"Picker{datas}"
             exists = redis_client.sismember(redis_set_key, str(datas))
+
             if not exists:
                 redis_client.sadd(redis_set_key,str(datas))
                 redis_client.expire(redis_set_key, 60*60*24)
@@ -91,14 +94,12 @@ def get_picker(tournament, season, gameType, db_config,season_date):
                     conn.push_data(f"expert_{gameType}",datas)
                     requests.post(url= url_ats, json=[datas])
                 elif datas.get("win_pct") >= 51 and gameType == "ou" and datas.get("result") == "pregame":
-                    print([datas])
-
                     conn.push_data(f"expert_{gameType}",datas)
                     requests.post(url= url_ou, json=[datas])
                 else:
                     continue
             else:
-                # print(f"🦄👩🏻‍💻 Duplicate data found, skipping: {datas}")
+        
                 continue
     conn.close()
 
@@ -109,4 +110,4 @@ def main():
 if __name__ == "__main__":
     while True:
         main()
-        time.sleep(2)
+        time.sleep(60)
